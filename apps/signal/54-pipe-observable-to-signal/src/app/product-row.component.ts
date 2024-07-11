@@ -1,9 +1,9 @@
-import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
-  Input,
+  input,
 } from '@angular/core';
 import { CurrencyPipe } from './currency.pipe';
 import { CurrencyService } from './currency.service';
@@ -13,21 +13,25 @@ import { Product } from './product.model';
   standalone: true,
   selector: 'tr[product-row]',
   template: `
-    <td>{{ productInfo.name }}</td>
-    <td>{{ productInfo.priceA | currency | async }}</td>
-    <td>{{ productInfo.priceB | currency | async }}</td>
-    <td>{{ productInfo.priceC | currency | async }}</td>
+    <td>{{ product().name }}</td>
+    <td>{{ product().priceA | currency }}</td>
+    <td>{{ product().priceB | currency }}</td>
+    <td>{{ product().priceC | currency }}</td>
   `,
-  imports: [AsyncPipe, CurrencyPipe],
+  imports: [CurrencyPipe],
   providers: [CurrencyService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductRowComponent {
-  protected productInfo!: Product;
+  product = input.required<Product>();
 
-  @Input({ required: true }) set product(product: Product) {
-    this.currencyService.updateCode(product.currencyCode);
-    this.productInfo = product;
+  constructor() {
+    effect(
+      () => {
+        this.currencyService.updateCode(this.product().currencyCode);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   currencyService = inject(CurrencyService);

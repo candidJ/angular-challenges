@@ -65,19 +65,19 @@ export class UserFormComponent {
   userStore = inject(UserStore);
 
   form = new FormGroup({
-    name: new FormControl(this.userStore.user().name, { nonNullable: true }),
-    street: new FormControl(this.userStore.user().address.street, {
+    name: new FormControl(this.userStore.name(), { nonNullable: true }),
+    street: new FormControl(this.userStore.street(), {
       nonNullable: true,
     }),
-    zipCode: new FormControl(this.userStore.user().address.zipCode, {
+    zipCode: new FormControl(this.userStore.zipCode(), {
       nonNullable: true,
     }),
-    city: new FormControl(this.userStore.user().address.city, {
+    city: new FormControl(this.userStore.city(), {
       nonNullable: true,
     }),
-    note: new FormControl(this.userStore.user().note, { nonNullable: true }),
-    title: new FormControl(this.userStore.user().title, { nonNullable: true }),
-    salary: new FormControl(this.userStore.user().salary, {
+    note: new FormControl(this.userStore.note(), { nonNullable: true }),
+    title: new FormControl(this.userStore.title(), { nonNullable: true }),
+    salary: new FormControl(this.userStore.salary(), {
       nonNullable: true,
     }),
   });

@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { products } from './products';
 
 @Component({
@@ -33,7 +34,7 @@ import { products } from './products';
       </form>
       <div class="flex justify-between">
         <div>SubTotal</div>
-        <div>{{ totalWihoutVat() }} €</div>
+        <div>{{ totalWithoutVat() }} €</div>
       </div>
       <div class="flex justify-between">
         <div>VAT (21%)</div>
@@ -55,8 +56,12 @@ import { products } from './products';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OrderComponent {
+  activatedRoute = inject(ActivatedRoute);
+  quantityFromParams =
+    Number(this.activatedRoute.snapshot.queryParams['quantity']) || 1;
+
   form = new FormGroup({
-    quantity: new FormControl(1, { nonNullable: true }),
+    quantity: new FormControl(this.quantityFromParams, { nonNullable: true }),
   });
 
   productId = input('1');
@@ -66,7 +71,7 @@ export default class OrderComponent {
   quantity = toSignal(this.form.controls.quantity.valueChanges, {
     initialValue: this.form.getRawValue().quantity,
   });
-  totalWihoutVat = computed(() => Number(this.price()) * this.quantity());
-  vat = computed(() => this.totalWihoutVat() * 0.21);
-  total = computed(() => this.totalWihoutVat() + this.vat());
+  totalWithoutVat = computed(() => Number(this.price()) * this.quantity());
+  vat = computed(() => this.totalWithoutVat() * 0.21);
+  total = computed(() => this.totalWithoutVat() + this.vat());
 }
